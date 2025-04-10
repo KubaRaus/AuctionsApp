@@ -63,8 +63,8 @@
             else
             {
                 <div>
-                    Bid: $ Bid: $ < type="number" min="@Model.Price" step="1" name="Price" placeholder="@Model.Price.ToString("N2")"/>
-                    <input disabled type="submit" class="btn btn-primary"/>
+                    Bid: $ <input type="number" min="@Model.Price" step="1" name="Price" placeholder="@Model.Price.ToString("N2")" />
+                    <input disabled type="submit" class="btn btn-primary">
                 </div>
                 <p>Bids submitted: @Model.Bids.Count</p>
             }
