@@ -23,6 +23,7 @@ namespace AuctionsApp.Data.Services
                                                 select a;
             return applicationDbContext;
         }
+       
     }
 
 

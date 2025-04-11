@@ -1,4 +1,6 @@
-﻿@model PaginatedList<AuctionsApp.Models.Listing>
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model PaginatedList<AuctionsApp.Models.Listing>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,6 +10,11 @@
 
 @foreach (var listing in Model)
 {
+    @if (User.Identity.IsAuthenticated && listing.IdentityUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+    {
+        <a asp-action="Edit" asp-route-id="@listing.Id" class="btn btn-warning">Edit</a>
+        <a asp-action="Delete" asp-route-id="@listing.Id" class="btn btn-danger">Delete</a>
+    }
     <div class="container" style="background-color: rgba(138, 129, 133, 0.6); margin-top:50px; margin-bottom: 50px; padding: 20px; border-radius: 10px;">
         <div class="row">
             <div class="col col-xs-6 col-lg-5">
@@ -48,3 +55,69 @@
         Next
     </a>
 </div>
+
+<h2>Currency Calculator</h2>
+<div class="container">
+    <form id="currencyCalculatorForm">
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <input type="number" step="0.01" class="form-control" id="amount" required />
+        </div>
+        <div class="mb-3">
+            <label for="baseCurrency" class="form-label">Base Currency</label>
+            <select class="form-select" id="baseCurrency" required>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="PLN">PLN</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="targetCurrency" class="form-label">Target Currency</label>
+            <select class="form-select" id="targetCurrency" required>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="PLN">PLN</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="convertCurrency()">Convert</button>
+    </form>
+
+    <div id="conversionResult" class="alert alert-success mt-3" style="display: none;">
+        Converted Amount: <span id="convertedAmount"></span>
+    </div>
+</div>
+<script>
+    async function convertCurrency() {
+        const amount = document.getElementById('amount').value;
+        const baseCurrency = document.getElementById('baseCurrency').value;
+        const targetCurrency = document.getElementById('targetCurrency').value;
+
+        if (!amount || !baseCurrency || !targetCurrency) {
+            alert('Please fill out all fields.');
+            return;
+        }
+
+        const apiKey = '0afecb65ee24d1e019d76095';
+        const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/${baseCurrency}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data && data.conversion_rates && data.conversion_rates[targetCurrency]) {
+                const rate = data.conversion_rates[targetCurrency];
+                const convertedAmount = (amount * rate).toFixed(2);
+
+                document.getElementById('convertedAmount').textContent = `${convertedAmount} ${targetCurrency}`;
+                document.getElementById('conversionResult').style.display = 'block';
+            } else {
+                alert('Conversion failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error fetching conversion rates:', error);
+            alert('An error occurred. Please try again later.');
+        }
+    }
+</script>

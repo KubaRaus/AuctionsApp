@@ -3,6 +3,7 @@
 @inject UserManager<IdentityUser> UserManager
 @{
     ViewData["Title"] = "Details";
+    var exchangeRates = ViewBag.ExchangeRates as Dictionary<string, decimal>;
 }
 
 @if (User.Identity.IsAuthenticated)
