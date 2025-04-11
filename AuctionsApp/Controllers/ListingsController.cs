@@ -163,51 +163,41 @@ namespace AuctionsApp.Controllers
                 return Unauthorized();
             }
 
-            var listingVM = new ListingVM
-            {
-                Id = listing.Id,
-                Title = listing.Title,
-                Description = listing.Description,
-                Price = listing.Price,
-                IsSold = listing.IsSold,
-                IdentityUserId = listing.IdentityUserId
-            };
-
             return View(listing);
         }
-
 
         // POST: Listings/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ListingVM listingVM)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Price,IsSold")] Listing listing)
         {
-            if (id != listingVM.Id)
+            if (id != listing.Id)
             {
                 return NotFound();
             }
 
-            var listing = await _listingsService.GetById(id);
-            if (listing == null || listing.IdentityUserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            var existingListing = await _listingsService.GetById(id);
+            if (existingListing == null || existingListing.IdentityUserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
             {
                 return Unauthorized();
             }
 
             if (ModelState.IsValid)
             {
-                // Update the listing object with new values
-                listing.Title = listingVM.Title;
-                listing.Description = listingVM.Description;
-                listing.Price = listingVM.Price;
-                listing.IsSold = listingVM.IsSold;
+                existingListing.Title = listing.Title;
+                existingListing.Description = listing.Description;
+                existingListing.Price = listing.Price;
+                existingListing.IsSold = listing.IsSold;
 
-                // Save changes to the database
                 await _listingsService.SaveChanges();
+
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(listingVM);
+            return View(listing);
         }
+
+
 
 
 
