@@ -1,6 +1,6 @@
 Use DefaultConnection string to connect to the database (I used SQL server database).
 
-AuctionsApp is a web-based auction platform built using ASP.NET Core Razor Pages. It allows users to create, bid on, and manage auction listings. The application also supports user authentication, comments on listings, and a currency calculator powered by an external API.
+AuctionsApp is a web-based auction platform built using ASP.NET Core Razor Pages. It allows users to create, bid on, and manage auction listings. The application also supports user authentication, adding photos, comments on listings, and a currency calculator powered by an external API.
 Features
 
 •	User Authentication: Secure login and registration for users.
